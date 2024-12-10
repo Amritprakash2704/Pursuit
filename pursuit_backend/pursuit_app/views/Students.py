@@ -4,16 +4,24 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from pursuit_app.serializers.Student import StudentSerializer
 from pursuit_app.models.Student import Student
+from pursuit_app.serializers import StudentInterviewDashboardSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 class StudentViewSet(viewsets.ModelViewSet) :
     serializer_class = StudentSerializer
     queryset = Student.objects.all()
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [SessionAuthentication ,]
 
-    @action(detail=True, 
-    methods=['list'] ,
-    url_path='dashboard' ,
-    url_name='dashboard' ,)
-    def dashboard(self , request) :
-        pass
+    @action(
+        methods=['GET' ,] ,
+        detail = True ,
+        name='interview_dashboard',
+    )
+    def interview_dashboard(self,request,pk) : 
+        data = Student.objects.filter(status=pk)
+        data_serialized = StudentInterviewDashboardSerializer(data,many=True)
+        return Response(data_serialized.data)
+
+       
+
+        
